@@ -1,0 +1,7 @@
+app_gateway:
+  resource: /src/config/routes/gateway/
+  type: json
+
+controllers:
+  resource: ../src/Controller/
+  type: attribute

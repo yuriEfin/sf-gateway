@@ -1,0 +1,42 @@
+version: "3"
+
+services:
+
+    gateway-php:
+        container_name: gateway-php
+        hostname: gateway-php
+        env_file:
+            - ./backend/.env
+        build:
+            context: docker/php
+            dockerfile: Dockerfile
+            args:
+                TIMEZONE: ${TIMEZONE}
+        ports:
+            - 9004:9000
+        volumes:
+            - ./backend:/src
+            - ./docker/php/conf.d/xdebug.ini:/usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini
+            - ./docker/php/conf.d/error_reporting.ini:/usr/local/etc/php/conf.d/error_reporting.ini
+            - ./docker/php/conf.d/php.ini-production:/usr/local/etc/php/php.ini-production
+            - ./docker/php/conf.d/php.ini-development:/usr/local/etc/php/php.ini-development
+        extra_hosts:
+            - "host.docker.internal:host-gateway"
+
+    gateway-nginx:
+        container_name: gateway-nginx
+        hostname: gateway-nginx
+        build:
+            context: docker/nginx
+        volumes:
+            - ./backend:/src
+        ports:
+            - 8086:80
+        env_file:
+            - docker/nginx/.env.nginx.local
+
+networks:
+    default:
+        external:
+            name: symfony
+

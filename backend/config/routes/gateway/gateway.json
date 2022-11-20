@@ -1,0 +1,22 @@
+[
+  {
+    "route": "/auth/token",
+    "methods": [
+      "POST"
+    ]
+  },
+  {
+    "route": "/order",
+    "methods": [
+      "GET"
+    ],
+    "filters": [
+      {
+        "id": "\\d"
+      },
+      {
+        "title": "\\s"
+      }
+    ]
+  }
+]
