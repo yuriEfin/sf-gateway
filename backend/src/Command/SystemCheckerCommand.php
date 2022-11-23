@@ -37,7 +37,14 @@ class SystemCheckerCommand extends Command
     {
         $io = new SymfonyStyle($input, $output);
         
-        var_export($this->cacheItem->set('itemKey', 'itemValue'));
+        var_export(
+            $this->cacheItem->get(
+                'itemKey',
+                function () {
+                    return 'itemValue';
+                }
+            )
+        );
         $io->success('You have a new command! Now make it your own! Pass --help to see your options.');
         
         return Command::SUCCESS;

@@ -5,14 +5,15 @@ namespace App\Context\Rest;
 
 use App\Context\Exceptions\RouteHandlerNotExistsException;
 use App\Context\Rest\Interfaces\RouteHandlerInterface;
-use App\Context\Rest\Interfaces\HandlerResolverInterface;
+use App\Context\Rest\Interfaces\HandlerInterface;
 use Symfony\Component\DependencyInjection\Argument\RewindableGenerator;
 use Symfony\Component\HttpFoundation\RequestStack;
 
-class RouteHandler implements HandlerResolverInterface
+class RouteHandler implements HandlerInterface
 {
-    private array        $handlers;
-    private RequestStack $request;
+    private array                  $handlers;
+    private RequestStack           $request;
+    private ?RouteHandlerInterface $currentHandler = null;
     
     public function __construct(RewindableGenerator $handlers, RequestStack $request)
     {
@@ -23,21 +24,32 @@ class RouteHandler implements HandlerResolverInterface
         $this->request = $request;
     }
     
-    public function resolve(): RouteHandlerInterface
+    public function handle()
     {
         $request = $this->request->getCurrentRequest();
         $params = new HandlerParams(
             $request->getPathInfo(),
             $request->getMethod(),
-            []
+            [
+                'get'  => $request->query->all(),
+                'post' => $request->request->all(),
+                'body' => json_decode($request->getContent() ?? [], true),
+            ]
         );
+        
+        /** @var RouteHandlerInterface $handler */
         foreach ($this->handlers as $handler) {
             if ($handler->support($params)) {
-                return $handler;
+                $this->currentHandler = $handler;
+                
+                break;
             }
         }
+        if (!$this->currentHandler) {
+            throw new RouteHandlerNotExistsException($request->getPathInfo());
+        }
         
-        throw new RouteHandlerNotExistsException($request->getPathInfo());
+        return $this->currentHandler->handle($params);
     }
     
     public function addHandler(RouteHandlerInterface $handler): void
@@ -45,8 +57,8 @@ class RouteHandler implements HandlerResolverInterface
         $this->handlers[get_class($handler)] = $handler;
     }
     
-    public function getHandlers()
+    public function getCurrentHandler(): ?array
     {
-        return $this->handlers;
+        return $this->currentHandler;
     }
 }

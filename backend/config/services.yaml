@@ -23,7 +23,7 @@ services:
         App\Context\Rest\Interfaces\RouteHandlerInterface:
             tags: ['app.handler_route']
 
-    App\Context\Rest\Interfaces\HandlerResolverInterface:
+    App\Context\Rest\Interfaces\HandlerInterface:
         class: 'App\Context\Rest\RouteHandler'
         arguments:
             $handlers: !tagged app.handler_route

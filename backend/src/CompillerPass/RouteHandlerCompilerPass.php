@@ -3,7 +3,7 @@
 namespace App\CompillerPass;
 
 
-use App\Context\Rest\Interfaces\HandlerResolverInterface;
+use App\Context\Rest\Interfaces\HandlerInterface;
 use App\Context\Rest\RouteHandler;
 use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
@@ -13,7 +13,7 @@ class RouteHandlerCompilerPass implements CompilerPassInterface
 {
     public function process(ContainerBuilder $container): void
     {
-        if (!$container->has(HandlerResolverInterface::class)) {
+        if (!$container->has(HandlerInterface::class)) {
             return;
         }
         

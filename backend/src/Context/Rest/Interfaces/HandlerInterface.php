@@ -3,9 +3,9 @@
 namespace App\Context\Rest\Interfaces;
 
 
-interface HandlerResolverInterface
+interface HandlerInterface
 {
-    public function resolve(): RouteHandlerInterface;
+    public function handle();
     
     public function addHandler(RouteHandlerInterface $handler): void;
 }

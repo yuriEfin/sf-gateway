@@ -6,6 +6,12 @@
     ]
   },
   {
+    "route": "/auth/token/refresh",
+    "methods": [
+      "POST"
+    ]
+  },
+  {
     "route": "/order",
     "methods": [
       "GET"
